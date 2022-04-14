@@ -1,22 +1,73 @@
 from tkinter import *
 import tkinter as tk
+import sqlite3
+
 
 
 ## Main menu of the app
+
 
 root= Tk()
 root.title("Recappty")
 global recepty_lookup_window
 global add_recepy_window
 
-def recepy_lookup():
+
+
+conn = sqlite3.connect("Recappty.db")
+c = conn.cursor()
+conn.commit()
+
+def recipe_lookup():
 	recepty_lookup_window = Toplevel()
 	recepty_lookup_window.geometry("400x400")
 	frame_recepty_lookup_window = LabelFrame(recepty_lookup_window)
 	frame_recepty_lookup_window.grid()
 
-	nadpis = Label(recepty_lookup_window, text="Recepy lookup").grid(row=0, columnspan=2, column=0)
-	
+	nadpis = Label(recepty_lookup_window, text="Recipe lookup").grid(row=0, columnspan=2, column=0)
+	ID_entry_label=Label(recepty_lookup_window, text="ID:").grid(row=1,column=0)
+	ID_entry = Entry(recepty_lookup_window, width = 50).grid(row=1, column=1,padx=5)
+
+	ingre_entry_label=Label(recepty_lookup_window, text="Ingre:").grid(row=2,column=0)
+	ingre_entry = Entry(recepty_lookup_window, width = 50).grid(row=2, column=1,padx=5,pady=5)
+
+	category_entry_label=Label(recepty_lookup_window, text="Category:").grid(row=3,column=0)
+	category_entry = Entry(recepty_lookup_window, width = 50).grid(row=3, column=1,padx=5,pady=5)
+
+
+	b_lookup = Button(recepty_lookup_window, text="Find recipe", width=50).grid(row=4, columnspan=2, pady=5, padx = 5)
+
+def recipe_add():
+	recepty_add_window = Toplevel()
+	recepty_add_window.geometry("400x400")
+	frame_recepty_add_window = LabelFrame(recepty_add_window)
+	frame_recepty_add_window.grid()
+
+	nadpis = Label(recepty_add_window, text="Add Recipe").grid(row=0, columnspan=2, column=0)
+	ID_entry_label=Label(recepty_add_window, text="ID:").grid(row=1,column=0)
+	ID_entry = Entry(recepty_add_window, width = 50).grid(row=1, column=1,padx=5)
+
+	ingre_entry_label=Label(recepty_add_window, text="Ingre:").grid(row=2,column=0)
+	ingre_entry = Entry(recepty_add_window, width = 50).grid(row=2, column=1,padx=5,pady=5)
+
+	steps_entry_label=Label(recepty_add_window, text="Steps:").grid(row=3,column=0)
+	steps_entry = Entry(recepty_add_window, width = 50).grid(row=3, column=1,padx=5,pady=5)
+
+	category_entry_label=Label(recepty_add_window, text="Category:").grid(row=4,column=0)
+	category_entry = Entry(recepty_add_window, width = 50).grid(row=4, column=1,padx=5,pady=5)
+
+	time_entry_label=Label(recepty_add_window, text="Time:").grid(row=5,column=0)
+	time_entry = Entry(recepty_add_window, width = 50).grid(row=5, column=1,padx=5,pady=5)
+
+
+	b_lookup = Button(recepty_add_window, text="Add recipe", width=50).grid(row=6, columnspan=2, pady=5, padx = 5)
+
+	warning_notes_label = Label(recepty_add_window, text="Please note!", fg="red", font=("Arial",15)).grid(row=7,columnspan=2,pady=7)
+
+	ingre_notes_label = Label(recepty_add_window, text="Separate each ingrediens with comma").grid(row=8, columnspan=2, pady=5)
+	steps_notes_label = Label(recepty_add_window, text="Separate each step with slash /").grid(row=9, columnspan=2, pady=5)
+
+
 
 
 
@@ -39,9 +90,9 @@ frame3.grid(padx=10,pady=10, column = 0, row = 2)
 frame4 = LabelFrame(root,padx=5,pady=5)
 frame4.grid(padx=10,pady=10, column = 1, row = 2)
 
-b1 = Button(frame1, text="Možnost 1", height= 10,  width = 20, padx = 5, pady = 5, command=recepy_lookup)
+b1 = Button(frame1, text="Možnost 1", height= 10,  width = 20, padx = 5, pady = 5, command=recipe_lookup)
 b1.pack()
-b2 = Button(frame2, text="Možnost 2", height= 10,  width = 20, padx = 5, pady = 5)
+b2 = Button(frame2, text="Možnost 2", height= 10,  width = 20, padx = 5, pady = 5, command=recipe_add)
 b2.pack()
 b3 = Button(frame3, text="Možnost 3", height= 10,  width = 20, padx = 5, pady = 5)
 b3.pack()
