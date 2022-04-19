@@ -10,13 +10,34 @@ import sqlite3
 root= Tk()
 root.title("Recappty")
 global recepty_lookup_window
-global add_recepy_window
+global add_recipe_window
+name_var=StringVar()
+ingre_var=StringVar()
+steps_var=StringVar()
+category_var=StringVar()
+time_var=IntVar()
+
+
 
 
 
 conn = sqlite3.connect("Recappty.db")
 c = conn.cursor()
-conn.commit()
+
+try:
+
+	c.execute("""CREATE TABLE Recappty (
+		name text, 
+		ingre text, 
+		steps text,
+		category text, 
+		aprrox_time integer
+		
+		)""")
+except:
+	pass
+
+conn.close()
 
 def recipe_lookup():
 	recepty_lookup_window = Toplevel()
@@ -44,23 +65,23 @@ def recipe_add():
 	frame_recepty_add_window.grid()
 
 	nadpis = Label(recepty_add_window, text="Add Recipe").grid(row=0, columnspan=2, column=0)
-	ID_entry_label=Label(recepty_add_window, text="ID:").grid(row=1,column=0)
-	ID_entry = Entry(recepty_add_window, width = 50).grid(row=1, column=1,padx=5)
+	name_entry_label=Label(recepty_add_window, text="Name:").grid(row=1,column=0)
+	name_entry = Entry(recepty_add_window, width = 50, textvariable=name_var).grid(row=1, column=1,padx=5)
 
 	ingre_entry_label=Label(recepty_add_window, text="Ingre:").grid(row=2,column=0)
-	ingre_entry = Entry(recepty_add_window, width = 50).grid(row=2, column=1,padx=5,pady=5)
+	ingre_entry = Entry(recepty_add_window, width = 50, textvariable=ingre_var).grid(row=2, column=1,padx=5,pady=5)
 
 	steps_entry_label=Label(recepty_add_window, text="Steps:").grid(row=3,column=0)
-	steps_entry = Entry(recepty_add_window, width = 50).grid(row=3, column=1,padx=5,pady=5)
+	steps_entry = Entry(recepty_add_window, width = 50, textvariable=steps_var).grid(row=3, column=1,padx=5,pady=5)
 
 	category_entry_label=Label(recepty_add_window, text="Category:").grid(row=4,column=0)
-	category_entry = Entry(recepty_add_window, width = 50).grid(row=4, column=1,padx=5,pady=5)
+	category_entry = Entry(recepty_add_window, width = 50, textvariable=category_var).grid(row=4, column=1,padx=5,pady=5)
 
 	time_entry_label=Label(recepty_add_window, text="Time:").grid(row=5,column=0)
-	time_entry = Entry(recepty_add_window, width = 50).grid(row=5, column=1,padx=5,pady=5)
+	time_entry = Entry(recepty_add_window, width = 50, textvariable=time_var).grid(row=5, column=1,padx=5,pady=5)
 
 
-	b_lookup = Button(recepty_add_window, text="Add recipe", width=50).grid(row=6, columnspan=2, pady=5, padx = 5)
+	b_add = Button(recepty_add_window, text="Add recipe", width=50, command=add_recipe).grid(row=6, columnspan=2, pady=5, padx = 5)
 
 	warning_notes_label = Label(recepty_add_window, text="Please note!", fg="red", font=("Arial",15)).grid(row=7,columnspan=2,pady=7)
 
@@ -72,8 +93,38 @@ def recipe_add():
 
 
 
-def add_recepy():
-	add_recepy_window = Toplevel()
+
+
+
+
+
+
+
+def add_recipe():
+	conn = sqlite3.connect("Recappty.db")
+	c = conn.cursor()
+	c.execute("INSERT INTO Recappty VALUES (:name, :ingre, :steps, :category, :aprrox_time)",
+		{
+		"name": name_var.get(),
+		"ingre": ingre_var.get(),
+		"steps": steps_var.get(),
+		"category": category_var.get(),
+		"aprrox_time":time_var.get()
+
+		}
+
+		)
+
+
+
+	conn.commit()
+	conn.close()
+
+	#name_entry.delete(0,END)
+	#ingre_entry.delete(0,END)
+	#steps_entry.delete(0,END)
+	#category_entry.delete(0,END)
+	#time_entry.delete(0,END)
 
 
 
