@@ -11,11 +11,7 @@ root= Tk()
 root.title("Recappty")
 global recepty_lookup_window
 global add_recipe_window
-name_var=StringVar()
-ingre_var=StringVar()
-steps_var=StringVar()
-category_var=StringVar()
-time_var=IntVar()
+
 
 
 
@@ -26,105 +22,140 @@ c = conn.cursor()
 
 try:
 
-	c.execute("""CREATE TABLE Recappty (
-		name text, 
-		ingre text, 
-		steps text,
-		category text, 
-		aprrox_time integer
-		
-		)""")
+    c.execute("""CREATE TABLE Recappty (
+        name text, 
+        ingre text, 
+        steps text,
+        category text, 
+        aprrox_time integer
+        
+        )""")
 except:
-	pass
+    pass
 
 conn.close()
 
 def recipe_lookup():
-	recepty_lookup_window = Toplevel()
-	recepty_lookup_window.geometry("400x400")
-	frame_recepty_lookup_window = LabelFrame(recepty_lookup_window)
-	frame_recepty_lookup_window.grid()
+    recepty_lookup_window = Toplevel()
+    recepty_lookup_window.geometry("400x400")
+    frame_recepty_lookup_window = LabelFrame(recepty_lookup_window)
+    frame_recepty_lookup_window.grid()
 
-	nadpis = Label(recepty_lookup_window, text="Recipe lookup").grid(row=0, columnspan=2, column=0)
-	ID_entry_label=Label(recepty_lookup_window, text="ID:").grid(row=1,column=0)
-	ID_entry = Entry(recepty_lookup_window, width = 50).grid(row=1, column=1,padx=5)
+    nadpis = Label(recepty_lookup_window, text="Recipe lookup").grid(row=0, columnspan=2, column=0)
+    ID_entry_label=Label(recepty_lookup_window, text="ID:").grid(row=1,column=0)
+    ID_entry = Entry(recepty_lookup_window, width = 50)
+    ID_entry.grid(row=1, column=1,padx=5)
 
-	ingre_entry_label=Label(recepty_lookup_window, text="Ingre:").grid(row=2,column=0)
-	ingre_entry = Entry(recepty_lookup_window, width = 50).grid(row=2, column=1,padx=5,pady=5)
+    ingre_entry_label=Label(recepty_lookup_window, text="Ingre:").grid(row=2,column=0)
+    ingre_entry = Entry(recepty_lookup_window, width = 50)
+    ingre_entry.grid(row=2, column=1,padx=5,pady=5)
 
-	category_entry_label=Label(recepty_lookup_window, text="Category:").grid(row=3,column=0)
-	category_entry = Entry(recepty_lookup_window, width = 50).grid(row=3, column=1,padx=5,pady=5)
+    category_entry_label=Label(recepty_lookup_window, text="Category:").grid(row=3,column=0)
+    category_entry = Entry(recepty_lookup_window, width = 50)
+    category_entry.grid(row=3, column=1,padx=5,pady=5)
 
 
-	b_lookup = Button(recepty_lookup_window, text="Find recipe", width=50).grid(row=4, columnspan=2, pady=5, padx = 5)
+    b_lookup = Button(recepty_lookup_window, text="Find recipe", width=50,command = lookup_call).grid(row=4, columnspan=2, pady=5, padx = 5)
+
+def lookup_call():
+    conn = sqlite3.connect("Recappty.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM Recappty VALUES (:name, :ingre, :steps, :category, :aprrox_time)",
+        {
+        "name": name_var.get(),
+        "ingre": ingre_var.get(),
+        "steps": steps_var.get(),
+        "category": category_var.get(),
+        "aprrox_time":time_var.get()
+
+        }
+
+        )
+
+
+
+    conn.commit()
+    conn.close()
+
+    name_entry.delete(0,END)
+    ingre_entry.delete(0,END)
+    steps_entry.delete(0,END)
+    category_entry.delete(0,END)
+    time_entry.delete(0,END)
+
 
 def recipe_add():
-	recepty_add_window = Toplevel()
-	recepty_add_window.geometry("400x400")
-	frame_recepty_add_window = LabelFrame(recepty_add_window)
-	frame_recepty_add_window.grid()
+    recepty_add_window = Toplevel()
+    recepty_add_window.geometry("400x400")
+    frame_recepty_add_window = LabelFrame(recepty_add_window)
+    frame_recepty_add_window.grid()
 
-	nadpis = Label(recepty_add_window, text="Add Recipe").grid(row=0, columnspan=2, column=0)
-	name_entry_label=Label(recepty_add_window, text="Name:").grid(row=1,column=0)
-	name_entry = Entry(recepty_add_window, width = 50, textvariable=name_var).grid(row=1, column=1,padx=5)
+    nadpis = Label(recepty_add_window, text="Add Recipe").grid(row=0, columnspan=2, column=0)
 
-	ingre_entry_label=Label(recepty_add_window, text="Ingre:").grid(row=2,column=0)
-	ingre_entry = Entry(recepty_add_window, width = 50, textvariable=ingre_var).grid(row=2, column=1,padx=5,pady=5)
+    global name_entry
+    name_var=StringVar()
+    name_entry_label=Label(recepty_add_window, text="Name:").grid(row=1,column=0)
+    name_entry = Entry(recepty_add_window, width = 50, textvariable=name_var)
+    name_entry.grid(row=1, column=1,padx=5)
 
-	steps_entry_label=Label(recepty_add_window, text="Steps:").grid(row=3,column=0)
-	steps_entry = Entry(recepty_add_window, width = 50, textvariable=steps_var).grid(row=3, column=1,padx=5,pady=5)
+    global ingre_entry
+    ingre_var=StringVar()
+    ingre_entry_label=Label(recepty_add_window, text="Ingre:").grid(row=2,column=0)
+    ingre_entry = Entry(recepty_add_window, width = 50, textvariable=ingre_var)
+    ingre_entry.grid(row=2, column=1,padx=5,pady=5)
 
-	category_entry_label=Label(recepty_add_window, text="Category:").grid(row=4,column=0)
-	category_entry = Entry(recepty_add_window, width = 50, textvariable=category_var).grid(row=4, column=1,padx=5,pady=5)
-
-	time_entry_label=Label(recepty_add_window, text="Time:").grid(row=5,column=0)
-	time_entry = Entry(recepty_add_window, width = 50, textvariable=time_var).grid(row=5, column=1,padx=5,pady=5)
-
-
-	b_add = Button(recepty_add_window, text="Add recipe", width=50, command=add_recipe).grid(row=6, columnspan=2, pady=5, padx = 5)
-
-	warning_notes_label = Label(recepty_add_window, text="Please note!", fg="red", font=("Arial",15)).grid(row=7,columnspan=2,pady=7)
-
-	ingre_notes_label = Label(recepty_add_window, text="Separate each ingrediens with comma").grid(row=8, columnspan=2, pady=5)
-	steps_notes_label = Label(recepty_add_window, text="Separate each step with slash /").grid(row=9, columnspan=2, pady=5)
+    global steps_entry
+    steps_var=StringVar()
+    steps_entry_label=Label(recepty_add_window, text="Steps:").grid(row=3,column=0)
+    steps_entry = Entry(recepty_add_window, width = 50, textvariable=steps_var)
+    steps_entry.grid(row=3, column=1,padx=5,pady=5)
 
 
+    global category_entry
+    category_var=StringVar()
+    category_entry_label=Label(recepty_add_window, text="Category:").grid(row=4,column=0)
+    category_entry = Entry(recepty_add_window, width = 50, textvariable=category_var)
+    category_entry.grid(row=4, column=1,padx=5,pady=5)
+
+    global time_entry
+    time_var=IntVar()
+    time_entry_label=Label(recepty_add_window, text="Time:").grid(row=5,column=0)
+    time_entry = Entry(recepty_add_window, width = 50, textvariable=time_var)
+    time_entry.grid(row=5, column=1,padx=5,pady=5)
 
 
+    b_add = Button(recepty_add_window, text="Add recipe", width=50, command=add_recipe).grid(row=6, columnspan=2, pady=5, padx = 5)
 
+    warning_notes_label = Label(recepty_add_window, text="Please note!", fg="red", font=("Arial",15)).grid(row=7,columnspan=2,pady=7)
 
-
-
-
-
-
-
+    ingre_notes_label = Label(recepty_add_window, text="Separate each ingrediens with comma").grid(row=8, columnspan=2, pady=5)
+    steps_notes_label = Label(recepty_add_window, text="Separate each step with slash /").grid(row=9, columnspan=2, pady=5)
 
 def add_recipe():
-	conn = sqlite3.connect("Recappty.db")
-	c = conn.cursor()
-	c.execute("INSERT INTO Recappty VALUES (:name, :ingre, :steps, :category, :aprrox_time)",
-		{
-		"name": name_var.get(),
-		"ingre": ingre_var.get(),
-		"steps": steps_var.get(),
-		"category": category_var.get(),
-		"aprrox_time":time_var.get()
+    conn = sqlite3.connect("Recappty.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO Recappty VALUES (:name, :ingre, :steps, :category, :aprrox_time)",
+        {
+        "name": name_var.get(),
+        "ingre": ingre_var.get(),
+        "steps": steps_var.get(),
+        "category": category_var.get(),
+        "aprrox_time":time_var.get()
 
-		}
+        }
 
-		)
+        )
 
 
 
-	conn.commit()
-	conn.close()
+    conn.commit()
+    conn.close()
 
-	#name_entry.delete(0,END)
-	#ingre_entry.delete(0,END)
-	#steps_entry.delete(0,END)
-	#category_entry.delete(0,END)
-	#time_entry.delete(0,END)
+    name_entry.delete(0,END)
+    ingre_entry.delete(0,END)
+    steps_entry.delete(0,END)
+    category_entry.delete(0,END)
+    time_entry.delete(0,END)
 
 
 
