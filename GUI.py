@@ -36,8 +36,9 @@ except:
 conn.close()
 
 def recipe_lookup():
+    global recepty_lookup_window
     recepty_lookup_window = Toplevel()
-    recepty_lookup_window.geometry("400x400")
+    recepty_lookup_window.geometry("400x800")
     frame_recepty_lookup_window = LabelFrame(recepty_lookup_window)
     frame_recepty_lookup_window.grid()
 
@@ -60,28 +61,82 @@ def recipe_lookup():
 def lookup_call():
     conn = sqlite3.connect("Recappty.db")
     c = conn.cursor()
-    c.execute("SELECT * FROM Recappty VALUES (:name, :ingre, :steps, :category, :aprrox_time)",
-        {
-        "name": name_var.get(),
-        "ingre": ingre_var.get(),
-        "steps": steps_var.get(),
-        "category": category_var.get(),
-        "aprrox_time":time_var.get()
-
-        }
-
-        )
+    c.execute("SELECT rowid,name,ingre FROM Recappty")
+    counter = 0
+    global frame_query
+    frame_query = Frame(recepty_lookup_window)
+    frame_query.grid(row=5,columnspan=2)
+    for x,y,z in c:
+        ID = Label(frame_query, text = x)
+        ID.grid(row=counter, column=0)
+        name = Label(frame_query, text = y)
+        name.grid(row=counter, column=1)
+        ingre = Label(frame_query, text = z)
+        ingre.grid(row=counter, column=2)
+        counter +=1
 
 
 
     conn.commit()
     conn.close()
 
-    name_entry.delete(0,END)
-    ingre_entry.delete(0,END)
-    steps_entry.delete(0,END)
-    category_entry.delete(0,END)
-    time_entry.delete(0,END)
+def delete_recipe():
+
+    conn = sqlite3.connect("Recappty.db")
+    c = conn.cursor()
+
+    try:
+        c.execute(f"DELETE FROM Recappty WHERE rowid="+ ID_entry.get())
+        warning = Label(frame_del_lookup_window, text = "Recipe deleted successfully")
+        warning.grid(row=3, columnspan = 2)
+        conn.commit()
+        conn.close()
+        del_lookup_window.destroy()
+        del_lookup()
+
+    except:
+        warning = Label(frame_del_lookup_window, text = "Enter ID of recipe")
+        warning.grid(row=3, columnspan = 2)
+
+
+    
+
+
+
+def del_lookup():
+
+    global del_lookup_window
+    global ID_entry
+    global frame_del_lookup_window
+    del_lookup_window = Toplevel()
+    del_lookup_window.geometry("350x800")
+    frame_del_lookup_window = LabelFrame(del_lookup_window)
+    frame_del_lookup_window.grid(padx=5,pady=5)
+
+    nadpis = Label(frame_del_lookup_window, text="Delete recipe", fg="red", font=("Arial",15)).grid(row=0, columnspan=2, column=0)
+    ID_entry_label=Label(frame_del_lookup_window, text="ID:").grid(row=1,column=0)
+    ID_entry = Entry(frame_del_lookup_window, width = 50)
+    ID_entry.grid(row=1, column=1,padx=5)
+    b = Button(frame_del_lookup_window, text="Delete recipe",command=delete_recipe)
+    b.grid(row = 2, columnspan = 2)
+
+    conn = sqlite3.connect("Recappty.db")
+    c = conn.cursor()
+    c.execute("SELECT rowid,name FROM Recappty")
+    counter = 0
+    frame_query = Frame(del_lookup_window)
+    frame_query.grid(row=5,columnspan=2)
+    for x,y in c:
+        ID = Label(frame_query, text = x)
+        ID.grid(row=counter, column=0)
+        name = Label(frame_query, text = y)
+        name.grid(row=counter, column=1)
+        counter +=1
+
+    conn.commit()
+    conn.close()
+
+  
 
 
 def recipe_add():
@@ -110,7 +165,6 @@ def recipe_add():
     steps_entry = Entry(recepty_add_window, width = 50, textvariable=steps_var)
     steps_entry.grid(row=3, column=1,padx=5,pady=5)
 
-
     global category_entry
     category_var=StringVar()
     category_entry_label=Label(recepty_add_window, text="Category:").grid(row=4,column=0)
@@ -122,7 +176,6 @@ def recipe_add():
     time_entry_label=Label(recepty_add_window, text="Time:").grid(row=5,column=0)
     time_entry = Entry(recepty_add_window, width = 50, textvariable=time_var)
     time_entry.grid(row=5, column=1,padx=5,pady=5)
-
 
     b_add = Button(recepty_add_window, text="Add recipe", width=50, command=add_recipe).grid(row=6, columnspan=2, pady=5, padx = 5)
 
@@ -136,11 +189,11 @@ def add_recipe():
     c = conn.cursor()
     c.execute("INSERT INTO Recappty VALUES (:name, :ingre, :steps, :category, :aprrox_time)",
         {
-        "name": name_var.get(),
-        "ingre": ingre_var.get(),
-        "steps": steps_var.get(),
-        "category": category_var.get(),
-        "aprrox_time":time_var.get()
+        "name": name_entry.get(),
+        "ingre": ingre_entry.get(),
+        "steps": steps_entry.get(),
+        "category": category_entry.get(),
+        "aprrox_time":time_entry.get()
 
         }
 
@@ -172,11 +225,11 @@ frame3.grid(padx=10,pady=10, column = 0, row = 2)
 frame4 = LabelFrame(root,padx=5,pady=5)
 frame4.grid(padx=10,pady=10, column = 1, row = 2)
 
-b1 = Button(frame1, text="Možnost 1", height= 10,  width = 20, padx = 5, pady = 5, command=recipe_lookup)
+b1 = Button(frame1, text="Find recipe", height= 10,  width = 20, padx = 5, pady = 5, command=recipe_lookup)
 b1.pack()
-b2 = Button(frame2, text="Možnost 2", height= 10,  width = 20, padx = 5, pady = 5, command=recipe_add)
+b2 = Button(frame2, text="Add recipe", height= 10,  width = 20, padx = 5, pady = 5, command=recipe_add)
 b2.pack()
-b3 = Button(frame3, text="Možnost 3", height= 10,  width = 20, padx = 5, pady = 5)
+b3 = Button(frame3, text="Delete recipe", height= 10,  width = 20, padx = 5, pady = 5, command=del_lookup)
 b3.pack()
 b4 = Button(frame4, text="Možnost 4", height= 10,  width = 20, padx = 5, pady = 5)
 b4.pack()
